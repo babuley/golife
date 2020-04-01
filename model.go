@@ -1,6 +1,10 @@
 package main
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Cell struct {
 	X, Y  int
@@ -10,6 +14,7 @@ type Cell struct {
 
 type Config struct {
 	Width, Height int
+	Sleep         time.Duration
 }
 
 //IsAlive returns true for active cell

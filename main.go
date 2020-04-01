@@ -12,13 +12,13 @@ func main() {
 	defer Cleanup()
 
 	//Dimension of the grid
-	var dim = &Config{5, 5}
+	var dim = &Config{60, 30, 100}
 	grid := makeGrid(dim)
 	for {
 		// repeat
 		dumpGrid(grid)
 		runTick(grid)
-		time.Sleep(1000 * time.Millisecond)
+		time.Sleep(dim.Sleep * time.Millisecond)
 	}
 }
 
@@ -27,7 +27,7 @@ func makeGrid(config *Config) []*Cell {
 	for y := 0; y < config.Height; y++ {
 		for x := 0; x < config.Width; x++ {
 			alive := 0
-			if x > 0 && x < config.Width-1 && y == 2 {
+			if x > 0 && x < config.Width-1 && y%3 == 0 && y > 3 {
 				alive = 1
 			}
 			grid = append(grid, NewCell(y, x, alive))
@@ -83,9 +83,9 @@ func dumpGrid(grid []*Cell) {
 	for _, c := range grid {
 		simpleansi.MoveCursor(c.X, c.Y)
 		if c.IsAlive() {
-			fmt.Print(simpleansi.WithBackground("@", simpleansi.GREY))
+			fmt.Print(simpleansi.WithBackground("@", simpleansi.BLUE))
 		} else {
-			fmt.Print(simpleansi.WithBackground(" ", simpleansi.GREEN))
+			fmt.Print(simpleansi.WithBackground(" ", simpleansi.GREY))
 		}
 	}
 }
