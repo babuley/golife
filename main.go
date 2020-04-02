@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/danicat/simpleansi"
@@ -22,12 +23,32 @@ func main() {
 	}
 }
 
+type ActiveCondition func(x int, y int, config *Config) bool
+
+var generators = map[int]ActiveCondition{
+	0: activeCondition1,
+	1: activeCondition2,
+	2: activeCondition3,
+}
+
+func activeCondition1(x int, y int, config *Config) bool {
+	return x > 0 && x < config.Width-1 && y%3 == 0 && y > 3
+}
+func activeCondition2(x int, y int, config *Config) bool {
+	return x > 3 && x < config.Width-3 && y%5 == 0 && y > 3
+}
+func activeCondition3(x int, y int, config *Config) bool {
+	return x < 5 && x < config.Width-2 && y%2 != 0 && y > 3
+}
+
 func makeGrid(config *Config) []*Cell {
 	var grid []*Cell
+	rand.Seed(time.Now().UnixNano())
+	gen := generators[rand.Intn(len(generators)-1)]
 	for y := 0; y < config.Height; y++ {
 		for x := 0; x < config.Width; x++ {
 			alive := 0
-			if x > 0 && x < config.Width-1 && y%3 == 0 && y > 3 {
+			if gen(x, y, config) {
 				alive = 1
 			}
 			grid = append(grid, NewCell(y, x, alive))
