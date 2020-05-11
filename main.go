@@ -73,6 +73,7 @@ func getLiveNeighbours(cands []*Cell) []*Cell {
 func runTick(grid []*Cell) {
 	var toRevive []*Cell
 	var toKill []*Cell
+	//winner := make(chan *Cell)
 
 	for _, cand := range grid {
 		ns := getNeighbours(cand, grid)
@@ -85,12 +86,22 @@ func runTick(grid []*Cell) {
 			}
 		} else {
 			if len(aliveNeighbours) == 3 {
+				//winner <- cand
 				toRevive = append(toRevive, cand)
 			}
 		}
 	}
 	setAlive(1, toRevive)
+	//resurrect(winner)
 	setAlive(0, toKill)
+}
+
+func resurrect(winners chan *Cell) {
+	go func(winners chan *Cell) {
+		for cell := range winners {
+			cell.Value = 1
+		}
+	}(winners)
 }
 
 func setAlive(alive int, cells []*Cell) {
@@ -111,16 +122,6 @@ func dumpGrid(grid []*Cell) {
 	}
 }
 
-func defineNeighbours(cell *Cell) []Cell {
-	var neighbours []Cell
-	for j := -1; j < 2; j++ {
-		for i := -1; i < 2; i++ {
-			neighbours = append(neighbours, NewNeighbourCell(i, j))
-		}
-	}
-	return neighbours
-}
-
 func transformNeighbours(cell *Cell, neighbors []Cell) []Cell {
 	var calculated []Cell
 	for _, n := range neighbors {
@@ -131,14 +132,10 @@ func transformNeighbours(cell *Cell, neighbors []Cell) []Cell {
 
 func getNeighbours(cell *Cell, grid []*Cell) []*Cell {
 	var neighbours []*Cell
-	definedNeighbours := defineNeighbours(cell)
+	definedNeighbours := cell.DefineNeighbours()
 	calculated := transformNeighbours(cell, definedNeighbours)
 
 	for _, cand := range grid {
-		if cell.ID == cand.ID {
-			//Skip myself
-			continue
-		}
 		for _, nd := range calculated {
 			if nd.X == cand.X && nd.Y == cand.Y {
 				neighbours = append(neighbours, cand)
