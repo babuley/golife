@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestGrid(t *testing.T) {
-	dim := &Config{60, 30, 100}
+	dim := &Config{60, 30, 100, 100}
 	grid := makeGrid(dim)
 	expectedSize := 60 * 30
 	if expectedSize != len(grid) {
@@ -16,6 +16,15 @@ func TestNewNeighbourhood(t *testing.T) {
 	ns := c.DefineNeighbours()
 	if len(ns) != 8 {
 		t.Errorf("Expected 8, but got '%v'", len(ns))
+	}
+}
+
+func TestGenerators(t *testing.T) {
+	dim := &Config{60, 30, 100, 100}
+	gens := GetGenerators(dim)
+	expected := dim.Height * dim.Width
+	if len(gens) != expected {
+		t.Errorf("Expected '%v', but got '%v'", expected, len(gens))
 	}
 }
 

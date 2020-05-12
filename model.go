@@ -13,8 +13,9 @@ type Cell struct {
 }
 
 type Config struct {
-	Width, Height int
-	Sleep         time.Duration
+	Width, Height       int
+	Sleep               time.Duration
+	NumberOfGenerations int
 }
 
 //IsAlive returns true for active cell
